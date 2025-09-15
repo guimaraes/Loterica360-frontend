@@ -224,7 +224,7 @@ export interface SelectOption {
 
 // Table types
 export interface TableColumn<T> {
-  key: keyof T
+  key: keyof T | string
   label: string
   sortable?: boolean
   render?: (value: any, item: T) => React.ReactNode

@@ -9,8 +9,21 @@ export function formatCurrency(value: number): string {
 }
 
 export function formatDate(date: string | Date, pattern = 'dd/MM/yyyy'): string {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date
-  return format(dateObj, pattern, { locale: ptBR })
+  if (!date) return '-'
+  
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : date
+    
+    // Verificar se a data é válida
+    if (isNaN(dateObj.getTime())) {
+      return '-'
+    }
+    
+    return format(dateObj, pattern, { locale: ptBR })
+  } catch (error) {
+    console.error('Erro ao formatar data:', error, date)
+    return '-'
+  }
 }
 
 export function formatDateTime(date: string | Date): string {

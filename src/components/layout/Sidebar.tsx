@@ -6,7 +6,8 @@ import {
   Clock, 
   BarChart3, 
   Settings,
-  Receipt
+  Receipt,
+  UserCheck
 } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Movimentos', href: '/movimentos', icon: Receipt },
   { name: 'Relatórios', href: '/relatorios', icon: BarChart3 },
   { name: 'Usuários', href: '/usuarios', icon: Settings },
+  { name: 'Clientes', href: '/clientes', icon: UserCheck },
 ]
 
 export function Sidebar() {

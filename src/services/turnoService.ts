@@ -27,18 +27,13 @@ export const turnoService = {
     }
   },
 
-  async abrirTurno(turno: TurnoRequest): Promise<Turno> {
-    const response = await api.post<Turno>('/turnos/abrir', turno)
+  async createTurno(turno: TurnoRequest): Promise<Turno> {
+    const response = await api.post<Turno>('/turnos', turno)
     return response.data
   },
 
-  async fecharTurno(id: string, valorFinal: number): Promise<Turno> {
-    const response = await api.post<Turno>(`/turnos/${id}/fechar`, { valorFinal })
-    return response.data
-  },
-
-  async getTurnosByUsuario(usuarioId: string): Promise<Turno[]> {
-    const response = await api.get<Turno[]>(`/turnos/usuario/${usuarioId}`)
+  async fecharTurno(id: string): Promise<Turno> {
+    const response = await api.post<Turno>(`/turnos/${id}/fechar`)
     return response.data
   },
 }

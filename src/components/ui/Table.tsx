@@ -29,14 +29,17 @@ export function Table<T>({
   sortKey,
   sortDirection,
 }: TableProps<T>) {
-  const handleSort = (key: keyof T) => {
+  const handleSort = (key: keyof T | string) => {
     if (!onSort) return
+    
+    // Só permite ordenação para chaves que são propriedades do tipo T
+    if (typeof key === 'string') return
     
     const direction = sortKey === key && sortDirection === 'asc' ? 'desc' : 'asc'
     onSort(key, direction)
   }
 
-  const getSortIcon = (key: keyof T) => {
+  const getSortIcon = (key: keyof T | string) => {
     if (sortKey !== key) return null
     
     return sortDirection === 'asc' ? (
@@ -73,11 +76,11 @@ export function Table<T>({
                     column.sortable && 'cursor-pointer hover:bg-muted/80',
                     'first:pl-6 last:pr-6'
                   )}
-                  onClick={() => column.sortable && handleSort(column.key)}
+                  onClick={() => column.sortable && typeof column.key !== 'string' && handleSort(column.key)}
                 >
                   <div className="flex items-center space-x-2">
                     <span>{column.label}</span>
-                    {column.sortable && getSortIcon(column.key)}
+                    {column.sortable && typeof column.key !== 'string' && getSortIcon(column.key)}
                   </div>
                 </th>
               ))}
@@ -94,27 +97,36 @@ export function Table<T>({
                 </td>
               </tr>
             ) : (
-              data.map((item, index) => (
-                <tr
-                  key={index}
-                  className={cn(
-                    'border-b transition-colors hover:bg-muted/50',
-                    onRowClick && 'cursor-pointer'
-                  )}
-                  onClick={() => onRowClick?.(item)}
-                >
-                  {columns.map((column) => (
-                    <td
-                      key={String(column.key)}
-                      className="p-4 align-middle first:pl-6 last:pr-6"
-                    >
-                      {column.render
-                        ? column.render(item[column.key], item)
-                        : String(item[column.key] || '-')}
-                    </td>
-                  ))}
-                </tr>
-              ))
+              data.map((item, index) => {
+                console.log('Renderizando item:', index, item)
+                return (
+                  <tr
+                    key={index}
+                    className={cn(
+                      'border-b transition-colors hover:bg-muted/50',
+                      onRowClick && 'cursor-pointer'
+                    )}
+                    onClick={() => onRowClick?.(item)}
+                  >
+                    {columns.map((column) => {
+                      const value = typeof column.key === 'string' 
+                        ? (column.key === 'actions' ? undefined : item[column.key as keyof T])
+                        : item[column.key]
+                      console.log(`Coluna ${column.key}:`, value, 'Item:', item)
+                      return (
+                        <td
+                          key={String(column.key)}
+                          className="p-4 align-middle first:pl-6 last:pr-6"
+                        >
+                          {column.render
+                            ? column.render(value, item)
+                            : String(value || '-')}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })
             )}
           </tbody>
         </table>
