@@ -97,36 +97,37 @@ export function Table<T>({
                 </td>
               </tr>
             ) : (
-              data.map((item, index) => {
-                console.log('Renderizando item:', index, item)
-                return (
-                  <tr
-                    key={index}
-                    className={cn(
-                      'border-b transition-colors hover:bg-muted/50',
-                      onRowClick && 'cursor-pointer'
-                    )}
-                    onClick={() => onRowClick?.(item)}
-                  >
-                    {columns.map((column) => {
-                      const value = typeof column.key === 'string' 
-                        ? (column.key === 'actions' ? undefined : item[column.key as keyof T])
-                        : item[column.key]
-                      console.log(`Coluna ${column.key}:`, value, 'Item:', item)
-                      return (
-                        <td
-                          key={String(column.key)}
-                          className="p-4 align-middle first:pl-6 last:pr-6"
-                        >
-                          {column.render
-                            ? column.render(value, item)
-                            : String(value || '-')}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )
-              })
+              data.map((item, index) => (
+                <tr
+                  key={index}
+                  className={cn(
+                    'border-b transition-colors hover:bg-muted/50',
+                    onRowClick && 'cursor-pointer'
+                  )}
+                  onClick={() => onRowClick?.(item)}
+                >
+                  {columns.map((column) => {
+                    // Obter o valor baseado no tipo de coluna
+                    let value
+                    if (column.key === 'actions') {
+                      value = undefined // Para actions, não precisamos do valor
+                    } else {
+                      value = item[column.key as keyof T]
+                    }
+                    
+                    return (
+                      <td
+                        key={String(column.key)}
+                        className="p-4 align-middle first:pl-6 last:pr-6"
+                      >
+                        {column.render
+                          ? column.render(value, item)
+                          : String(value || '-')}
+                      </td>
+                    )
+                  })}
+                </tr>
+              ))
             )}
           </tbody>
         </table>

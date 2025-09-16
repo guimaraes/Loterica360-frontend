@@ -30,8 +30,6 @@ export function ClientesPage() {
     setLoading(true)
     try {
       const response = await clienteService.getClientes(currentPage, pageSize, searchTerm)
-      console.log('Dados recebidos da API:', response)
-      console.log('Clientes recebidos:', response.content)
       setClientes(response.content)
       setTotalClientes(response.totalElements)
     } catch (error) {

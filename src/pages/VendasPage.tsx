@@ -2,215 +2,153 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
-import { Select } from '../components/ui/Select'
 import { Table } from '../components/ui/Table'
 import { Modal } from '../components/ui/Modal'
-import { VendaForm } from '../components/forms/VendaForm'
-import { CancelVendaModal } from '../components/forms/CancelVendaModal'
-import { Plus, Search, Edit, X } from 'lucide-react'
-import { Venda, TableColumn } from '../types'
-import { formatCurrency, formatDateTime } from '../utils/format'
+import { VendaCaixaForm } from '../components/forms/VendaCaixaForm'
+import { ContagemCaixaForm } from '../components/forms/ContagemCaixaForm'
+import { Plus, Search, Trash2, DollarSign, Calculator } from 'lucide-react'
+import { VendaCaixa, ContagemCaixa, TableColumn } from '../types'
+import { formatCurrency } from '../utils/format'
+import { vendaCaixaService } from '../services/vendaCaixaService'
+import { contagemCaixaService } from '../services/contagemCaixaService'
 import toast from 'react-hot-toast'
 
-export function VendasPage() {
-  const [vendas, setVendas] = useState<Venda[]>([])
-  const [loading, setLoading] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [currentPage, setCurrentPage] = useState(0)
-  const [pageSize, setPageSize] = useState(10)
-  const [totalVendas, setTotalVendas] = useState(0)
-  const [sortKey, setSortKey] = useState<keyof Venda>('dataVenda')
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+type TabType = 'vendas' | 'contagem'
 
-  // Modal states
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
-  const [selectedVenda, setSelectedVenda] = useState<Venda | null>(null)
+export function VendasPage() {
+  const [activeTab, setActiveTab] = useState<TabType>('vendas')
+  
+  // Estados para vendas
+  const [vendas, setVendas] = useState<VendaCaixa[]>([])
+  const [vendasLoading, setVendasLoading] = useState(false)
+  const [vendasSearchTerm, setVendasSearchTerm] = useState('')
+  const [vendasCurrentPage, setVendasCurrentPage] = useState(0)
+  const [vendasPageSize, setVendasPageSize] = useState(10)
+  const [vendasTotal, setVendasTotal] = useState(0)
+  
+  // Estados para contagem
+  const [contagens, setContagens] = useState<ContagemCaixa[]>([])
+  const [contagensLoading, setContagensLoading] = useState(false)
+  const [contagensSearchTerm, setContagensSearchTerm] = useState('')
+  const [contagensCurrentPage, setContagensCurrentPage] = useState(0)
+  const [contagensPageSize, setContagensPageSize] = useState(10)
+  const [contagensTotal, setContagensTotal] = useState(0)
+
+  // Estados dos modais
+  const [isVendaModalOpen, setIsVendaModalOpen] = useState(false)
+  const [isContagemModalOpen, setIsContagemModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<VendaCaixa | ContagemCaixa | null>(null)
+  const [deleteType, setDeleteType] = useState<'venda' | 'contagem'>('venda')
 
   const loadVendas = async () => {
-    setLoading(true)
+    setVendasLoading(true)
     try {
-      const filters: any = {}
-      if (searchTerm) {
-        filters.search = searchTerm
-      }
-      if (statusFilter) {
-        filters.status = statusFilter
-      }
-
-      // Dados mock para demonstração
-      const mockVendas: Venda[] = [
-        {
-          id: '1',
-          turnoId: '1',
-          jogoId: '1',
-          tipoVenda: 'JOGO_INDIVIDUAL',
-          valorTotal: 4.50,
-          status: 'CONCLUIDA',
-          dataVenda: '2024-01-15T10:30:00Z',
-          numerosJogados: '01, 05, 12, 23, 35, 42',
-          jogo: {
-            id: '1',
-            nome: 'Mega-Sena',
-            codigo: 'MS',
-            precoBase: 4.50,
-            regrasJson: {},
-            ativo: true,
-          },
-        },
-        {
-          id: '2',
-          turnoId: '1',
-          bolaoId: '1',
-          tipoVenda: 'BOLAO',
-          valorTotal: 25.00,
-          status: 'CONCLUIDA',
-          dataVenda: '2024-01-15T10:35:00Z',
-          cotasCompradas: 5,
-          bolao: {
-            id: '1',
-            jogoId: '1',
-            concurso: '1234',
-            descricao: 'Bolão Mega-Sena',
-            cotasTotais: 100,
-            cotasVendidas: 50,
-            valorCota: 5.00,
-            dataSorteio: '2024-01-20T20:00:00Z',
-            status: 'ABERTO',
-            jogo: {
-              id: '1',
-              nome: 'Mega-Sena',
-              codigo: 'MS',
-              precoBase: 4.50,
-              regrasJson: {},
-              ativo: true,
-            },
-          },
-        },
-      ]
-
-      // Filtrar dados mock
-      let filteredVendas = mockVendas
-      if (searchTerm) {
-        filteredVendas = filteredVendas.filter(venda => 
-          venda.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          venda.tipoVenda.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      }
-      if (statusFilter) {
-        filteredVendas = filteredVendas.filter(venda => venda.status === statusFilter)
-      }
-
-      setVendas(filteredVendas)
-      setTotalVendas(filteredVendas.length)
-
-      // Comentado para usar dados mock
-      // const response = await vendaService.getVendas(currentPage, pageSize, filters)
-      // setVendas(response.content)
-      // setTotalVendas(response.totalElements)
+      const response = await vendaCaixaService.getVendas(vendasCurrentPage, vendasPageSize)
+      setVendas(response.content)
+      setVendasTotal(response.totalElements)
     } catch (error) {
       console.error('Erro ao carregar vendas:', error)
       toast.error('Erro ao carregar vendas')
     } finally {
-      setLoading(false)
+      setVendasLoading(false)
+    }
+  }
+
+  const loadContagens = async () => {
+    setContagensLoading(true)
+    try {
+      const response = await contagemCaixaService.getContagens(contagensCurrentPage, contagensPageSize)
+      setContagens(response.content)
+      setContagensTotal(response.totalElements)
+    } catch (error) {
+      console.error('Erro ao carregar contagens:', error)
+      toast.error('Erro ao carregar contagens')
+    } finally {
+      setContagensLoading(false)
     }
   }
 
   useEffect(() => {
-    loadVendas()
-  }, [currentPage, pageSize, searchTerm, statusFilter])
+    if (activeTab === 'vendas') {
+      loadVendas()
+    } else {
+      loadContagens()
+    }
+  }, [activeTab, vendasCurrentPage, vendasPageSize, contagensCurrentPage, contagensPageSize])
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value)
-    setCurrentPage(0)
-  }
+  const handleDelete = async () => {
+    if (!selectedItem) return
 
-  const handleSort = (key: keyof Venda, direction: 'asc' | 'desc') => {
-    setSortKey(key)
-    setSortDirection(direction)
-    // Aqui você implementaria a lógica de ordenação no backend
-  }
-
-  const handleCreateVenda = () => {
-    setSelectedVenda(null)
-    setIsCreateModalOpen(true)
-  }
-
-  const handleEditVenda = (venda: Venda) => {
-    setSelectedVenda(venda)
-    setIsEditModalOpen(true)
-  }
-
-  const handleCancelVenda = (venda: Venda) => {
-    setSelectedVenda(venda)
-    setIsCancelModalOpen(true)
+    try {
+      if (deleteType === 'venda') {
+        await vendaCaixaService.deleteVenda(selectedItem.id)
+        toast.success('Venda excluída com sucesso!')
+        loadVendas()
+      } else {
+        await contagemCaixaService.deleteContagem(selectedItem.id)
+        toast.success('Contagem excluída com sucesso!')
+        loadContagens()
+      }
+      setIsDeleteModalOpen(false)
+      setSelectedItem(null)
+    } catch (error) {
+      console.error('Erro ao excluir:', error)
+      toast.error('Erro ao excluir item')
+    }
   }
 
   const handleModalSuccess = () => {
-    loadVendas()
-    setIsCreateModalOpen(false)
-    setIsEditModalOpen(false)
-    setIsCancelModalOpen(false)
-    setSelectedVenda(null)
+    if (activeTab === 'vendas') {
+      loadVendas()
+    } else {
+      loadContagens()
+    }
+    setIsVendaModalOpen(false)
+    setIsContagemModalOpen(false)
   }
 
-  const columns: TableColumn<Venda>[] = [
+  const vendasColumns: TableColumn<VendaCaixa>[] = [
     {
       key: 'id',
       label: 'ID',
-      sortable: true,
-      render: (value) => <span className="font-mono text-sm">#{value}</span>,
+      render: (value) => <span className="font-mono text-sm">#{value.slice(-8)}</span>,
     },
     {
-      key: 'tipoVenda',
-      label: 'Tipo',
-      sortable: true,
-      render: (value) => (
-        <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-          {value === 'JOGO_INDIVIDUAL' ? 'Jogo Individual' : 'Bolão'}
+      key: 'numeroCaixa',
+      label: 'Caixa',
+      render: (value, venda) => (
+        <span className="font-medium">
+          Caixa {value} - {venda.descricaoCaixa || 'Sem descrição'}
         </span>
       ),
     },
     {
-      key: 'jogo',
-      label: 'Jogo/Bolão',
-      render: (_, venda) => {
-        if (venda.tipoVenda === 'JOGO_INDIVIDUAL' && venda.jogo) {
-          return <span className="text-sm">{venda.jogo.nome}</span>
-        }
-        if (venda.tipoVenda === 'BOLAO' && venda.bolao) {
-          return <span className="text-sm">{venda.bolao.jogo?.nome} - Concurso {venda.bolao.concurso}</span>
-        }
-        return <span className="text-sm text-muted-foreground">-</span>
-      },
+      key: 'nomeJogo',
+      label: 'Jogo',
+      render: (value, venda) => (
+        <div>
+          <div className="font-medium">{value}</div>
+          <div className="text-sm text-muted-foreground">
+            R$ {venda.precoJogo.toFixed(2)} cada
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'quantidade',
+      label: 'Qtd',
+      render: (value) => <span className="font-medium">{value}</span>,
     },
     {
       key: 'valorTotal',
-      label: 'Valor',
-      sortable: true,
-      render: (value) => <span className="font-medium">{formatCurrency(value)}</span>,
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      sortable: true,
-      render: (value) => (
-        <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-          value === 'CONCLUIDA' 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-red-100 text-red-800'
-        }`}>
-          {value === 'CONCLUIDA' ? 'Concluída' : 'Cancelada'}
-        </span>
-      ),
+      label: 'Valor Total',
+      render: (value) => <span className="font-medium text-green-600">{formatCurrency(value)}</span>,
     },
     {
       key: 'dataVenda',
-      label: 'Data/Hora',
-      sortable: true,
-      render: (value) => <span className="text-sm">{formatDateTime(value)}</span>,
+      label: 'Data',
+      render: (value) => <span className="text-sm">{new Date(value).toLocaleDateString('pt-BR')}</span>,
     },
     {
       key: 'actions',
@@ -220,21 +158,72 @@ export function VendasPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => handleEditVenda(venda)}
-            className="h-8 w-8 p-0"
+            onClick={() => {
+              setSelectedItem(venda)
+              setDeleteType('venda')
+              setIsDeleteModalOpen(true)
+            }}
+            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
           >
-            <Edit className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
-          {venda.status === 'CONCLUIDA' && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleCancelVenda(venda)}
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+        </div>
+      ),
+    },
+  ]
+
+  const contagensColumns: TableColumn<ContagemCaixa>[] = [
+    {
+      key: 'id',
+      label: 'ID',
+      render: (value) => <span className="font-mono text-sm">#{value.slice(-8)}</span>,
+    },
+    {
+      key: 'numeroCaixa',
+      label: 'Caixa',
+      render: (value, contagem) => (
+        <span className="font-medium">
+          Caixa {value} - {contagem.descricaoCaixa || 'Sem descrição'}
+        </span>
+      ),
+    },
+    {
+      key: 'totalGeral',
+      label: 'Total',
+      render: (value) => <span className="font-medium text-green-600">{formatCurrency(value)}</span>,
+    },
+    {
+      key: 'totalNotas',
+      label: 'Notas',
+      render: (value) => <span className="text-sm">{formatCurrency(value)}</span>,
+    },
+    {
+      key: 'totalMoedas',
+      label: 'Moedas',
+      render: (value) => <span className="text-sm">{formatCurrency(value)}</span>,
+    },
+    {
+      key: 'dataContagem',
+      label: 'Data',
+      render: (value) => <span className="text-sm">{new Date(value).toLocaleDateString('pt-BR')}</span>,
+    },
+    {
+      key: 'actions',
+      label: 'Ações',
+      render: (_, contagem) => (
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelectedItem(contagem)
+              setDeleteType('contagem')
+              setIsDeleteModalOpen(true)
+            }}
+            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
       ),
     },
@@ -244,22 +233,54 @@ export function VendasPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Vendas</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Vendas e Contagem</h1>
           <p className="text-muted-foreground">
-            Gerencie todas as vendas realizadas
+            Gerencie vendas por caixa e contagem de cédulas/moedas
           </p>
         </div>
-        <Button onClick={handleCreateVenda}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nova Venda
+        <div className="flex space-x-2">
+          {activeTab === 'vendas' ? (
+            <Button onClick={() => setIsVendaModalOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nova Venda
+            </Button>
+          ) : (
+            <Button onClick={() => setIsContagemModalOpen(true)}>
+              <Calculator className="mr-2 h-4 w-4" />
+              Nova Contagem
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex space-x-1 bg-muted p-1 rounded-lg w-fit">
+        <Button
+          variant={activeTab === 'vendas' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setActiveTab('vendas')}
+          className="flex items-center space-x-2"
+        >
+          <DollarSign className="h-4 w-4" />
+          <span>Vendas</span>
+        </Button>
+        <Button
+          variant={activeTab === 'contagem' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setActiveTab('contagem')}
+          className="flex items-center space-x-2"
+        >
+          <Calculator className="h-4 w-4" />
+          <span>Contagem</span>
         </Button>
       </div>
 
+      {/* Filtros */}
       <Card>
         <CardHeader>
           <CardTitle>Filtros</CardTitle>
           <CardDescription>
-            Filtre as vendas por status e termo de busca
+            {activeTab === 'vendas' ? 'Filtre as vendas' : 'Filtre as contagens'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -268,88 +289,119 @@ export function VendasPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar por ID ou tipo..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
+                  placeholder={activeTab === 'vendas' ? 'Buscar vendas...' : 'Buscar contagens...'}
+                  value={activeTab === 'vendas' ? vendasSearchTerm : contagensSearchTerm}
+                  onChange={(e) => {
+                    if (activeTab === 'vendas') {
+                      setVendasSearchTerm(e.target.value)
+                    } else {
+                      setContagensSearchTerm(e.target.value)
+                    }
+                  }}
                   className="pl-10"
                 />
               </div>
-            </div>
-            <div className="w-48">
-              <Select
-                placeholder="Todos os status"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                options={[
-                  { value: '', label: 'Todos os status' },
-                  { value: 'CONCLUIDA', label: 'Concluída' },
-                  { value: 'CANCELADA', label: 'Cancelada' },
-                ]}
-              />
             </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* Tabela */}
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Vendas</CardTitle>
+          <CardTitle>
+            {activeTab === 'vendas' ? 'Lista de Vendas' : 'Lista de Contagens'}
+          </CardTitle>
           <CardDescription>
-            {totalVendas} venda(s) encontrada(s)
+            {activeTab === 'vendas' 
+              ? `${vendasTotal} venda(s) encontrada(s)`
+              : `${contagensTotal} contagem(ns) encontrada(s)`
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table
-            data={vendas}
-            columns={columns}
-            loading={loading}
-            pagination={{
-              page: currentPage,
-              size: pageSize,
-              total: totalVendas,
-              onPageChange: setCurrentPage,
-              onSizeChange: setPageSize,
-            }}
-            onSort={handleSort}
-            sortKey={sortKey}
-            sortDirection={sortDirection}
-          />
+          {activeTab === 'vendas' ? (
+            <Table
+              data={vendas}
+              columns={vendasColumns}
+              loading={vendasLoading}
+              pagination={{
+                page: vendasCurrentPage,
+                size: vendasPageSize,
+                total: vendasTotal,
+                onPageChange: setVendasCurrentPage,
+                onSizeChange: setVendasPageSize,
+              }}
+            />
+          ) : (
+            <Table
+              data={contagens}
+              columns={contagensColumns}
+              loading={contagensLoading}
+              pagination={{
+                page: contagensCurrentPage,
+                size: contagensPageSize,
+                total: contagensTotal,
+                onPageChange: setContagensCurrentPage,
+                onSizeChange: setContagensPageSize,
+              }}
+            />
+          )}
         </CardContent>
       </Card>
 
       {/* Modals */}
       <Modal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        isOpen={isVendaModalOpen}
+        onClose={() => setIsVendaModalOpen(false)}
         title="Nova Venda"
         size="xl"
       >
-        <VendaForm
+        <VendaCaixaForm
           onSuccess={handleModalSuccess}
-          onCancel={() => setIsCreateModalOpen(false)}
+          onCancel={() => setIsVendaModalOpen(false)}
         />
       </Modal>
 
       <Modal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        title="Editar Venda"
+        isOpen={isContagemModalOpen}
+        onClose={() => setIsContagemModalOpen(false)}
+        title="Nova Contagem"
         size="xl"
       >
-        <VendaForm
-          venda={selectedVenda || undefined}
+        <ContagemCaixaForm
           onSuccess={handleModalSuccess}
-          onCancel={() => setIsEditModalOpen(false)}
-          isEditing
+          onCancel={() => setIsContagemModalOpen(false)}
         />
       </Modal>
 
-      <CancelVendaModal
-        isOpen={isCancelModalOpen}
-        onClose={() => setIsCancelModalOpen(false)}
-        venda={selectedVenda}
-        onSuccess={handleModalSuccess}
-      />
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={`Excluir ${deleteType === 'venda' ? 'Venda' : 'Contagem'}`}
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p>
+            Tem certeza que deseja excluir esta {deleteType === 'venda' ? 'venda' : 'contagem'}?
+            Esta ação não pode ser desfeita.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteModalOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+            >
+              Excluir
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

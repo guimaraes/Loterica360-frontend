@@ -24,33 +24,38 @@ export interface LoginResponse {
 export interface Jogo {
   id: string
   nome: string
-  codigo: string
-  precoBase: number
-  regrasJson: any
+  descricao?: string
+  preco: number
   ativo: boolean
+  criadoEm: string
 }
 
-// Bolão types
-export interface Bolao {
+export interface JogoRequest {
+  nome: string
+  descricao?: string
+  preco: number
+}
+
+export interface JogoUpdateRequest {
+  nome?: string
+  descricao?: string
+  preco?: number
+  ativo?: boolean
+}
+
+// Caixa types
+export interface Caixa {
   id: string
-  jogoId: string
-  jogo?: Jogo
-  concurso: string
+  numero: number
   descricao?: string
-  cotasTotais: number
-  cotasVendidas: number
-  valorCota: number
-  dataSorteio: string
-  status: 'ABERTO' | 'ENCERRADO' | 'CANCELADO'
+  ativo: boolean
+  criadoEm: string
 }
 
-export interface BolaoRequest {
-  jogoId: string
-  concurso: string
+export interface CaixaRequest {
+  numero: number
   descricao?: string
-  cotasTotais: number
-  valorCota: number
-  dataSorteio: string
+  ativo: boolean
 }
 
 // Turno types
@@ -71,37 +76,57 @@ export interface TurnoRequest {
   valorInicial: number
 }
 
-// Venda types
-export interface Venda {
+// Venda Caixa types
+export interface VendaCaixa {
   id: string
-  turnoId: string
-  turno?: Turno
-  jogoId?: string
-  jogo?: Jogo
-  bolaoId?: string
-  bolao?: Bolao
-  clienteId?: string
-  cliente?: Cliente
-  tipoVenda: 'JOGO_INDIVIDUAL' | 'BOLAO'
+  caixaId: string
+  numeroCaixa: number
+  descricaoCaixa?: string
+  jogoId: string
+  nomeJogo: string
+  precoJogo: number
+  quantidade: number
   valorTotal: number
-  status: 'CONCLUIDA' | 'CANCELADA'
   dataVenda: string
-  numerosJogados?: string
-  cotasCompradas?: number
-  pagamentos?: Pagamento[]
+  usuarioId: string
+  nomeUsuario: string
+  criadoEm: string
 }
 
-export interface VendaRequest {
-  turnoId: string
-  jogoId?: string
-  bolaoId?: string
-  clienteId?: string
-  tipoVenda: 'JOGO_INDIVIDUAL' | 'BOLAO'
-  valorTotal: number
-  numerosJogados?: string
-  cotasCompradas?: number
-  pagamentos: PagamentoRequest[]
+export interface VendaCaixaRequest {
+  caixaId: string
+  jogoId: string
+  quantidade: number
+  dataVenda: string
 }
+
+// Contagem Caixa types
+export interface ContagemCaixa {
+  id: string
+  caixaId: string
+  numeroCaixa: number
+  descricaoCaixa?: string
+  dataContagem: string
+  usuarioId: string
+  nomeUsuario: string
+  notas200: number
+  notas100: number
+  notas50: number
+  notas20: number
+  notas10: number
+  notas5: number
+  notas2: number
+  moedas1: number
+  moedas050: number
+  moedas025: number
+  moedas010: number
+  moedas005: number
+  totalNotas: number
+  totalMoedas: number
+  totalGeral: number
+  criadoEm: string
+}
+
 
 // Cliente types
 export interface Cliente {
@@ -122,11 +147,19 @@ export interface ClienteRequest {
   consentimentoLgpd: boolean
 }
 
-// Pagamento types
+// Usuario types
+export interface Usuario {
+  id: string
+  nome: string
+  email: string
+  papel: 'ADMIN' | 'GERENTE' | 'VENDEDOR'
+  ativo: boolean
+  criadoEm: string
+}
+
+// Pagamento types (mantido para compatibilidade)
 export interface Pagamento {
   id: string
-  vendaId: string
-  venda?: Venda
   metodoPagamento: 'DINHEIRO' | 'PIX' | 'CARTAO_DEBITO' | 'CARTAO_CREDITO'
   valor: number
   status: 'APROVADO' | 'PENDENTE' | 'ESTORNADO'
@@ -243,4 +276,48 @@ export interface TableProps<T> {
   }
   onSort?: (key: keyof T, direction: 'asc' | 'desc') => void
   onRowClick?: (item: T) => void
+}
+
+// ContagemCaixa types
+export interface ContagemCaixaRequest {
+  caixaId: string
+  dataContagem: string
+  notas200: number
+  notas100: number
+  notas50: number
+  notas20: number
+  notas10: number
+  notas5: number
+  notas2: number
+  moedas1: number
+  moedas050: number
+  moedas025: number
+  moedas010: number
+  moedas005: number
+}
+
+export interface ContagemCaixaResponse {
+  id: string
+  caixaId: string
+  numeroCaixa: number
+  descricaoCaixa: string
+  dataContagem: string
+  usuarioId: string
+  nomeUsuario: string
+  notas200: number
+  notas100: number
+  notas50: number
+  notas20: number
+  notas10: number
+  notas5: number
+  notas2: number
+  moedas1: number
+  moedas050: number
+  moedas025: number
+  moedas010: number
+  moedas005: number
+  totalNotas: number
+  totalMoedas: number
+  totalGeral: number
+  criadoEm: string
 }
