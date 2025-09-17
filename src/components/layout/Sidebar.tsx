@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { 
   Home, 
   ShoppingCart, 
+  Gamepad2,
   Users, 
   Clock, 
   BarChart3, 
@@ -16,6 +17,7 @@ import { cn } from '../../utils/cn'
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Vendas', href: '/vendas', icon: ShoppingCart },
+  { name: 'Jogos', href: '/jogos', icon: Gamepad2 },
   { name: 'Bolões', href: '/boloes', icon: Users },
   { name: 'Turnos', href: '/turnos', icon: Clock },
   { name: 'Movimentos', href: '/movimentos', icon: Receipt },

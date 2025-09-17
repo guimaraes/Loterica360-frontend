@@ -7,6 +7,7 @@ import { AuthRoute } from './components/layout/AuthRoute'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { VendasPage } from './pages/VendasPage'
+import { JogosPage } from './pages/JogosPage'
 import { BoloesPage } from './pages/BoloesPage'
 import { TurnosPage } from './pages/TurnosPage'
 import { RelatoriosPage } from './pages/RelatoriosPage'
@@ -27,6 +28,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/vendas" element={<VendasPage />} />
+                  <Route path="/jogos" element={<JogosPage />} />
                   <Route path="/boloes" element={<BoloesPage />} />
                   <Route path="/turnos" element={<TurnosPage />} />
                   <Route path="/movimentos" element={<MovimentosPage />} />

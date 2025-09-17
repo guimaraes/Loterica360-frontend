@@ -321,3 +321,37 @@ export interface ContagemCaixaResponse {
   totalGeral: number
   criadoEm: string
 }
+
+
+// Bolao types
+export interface Bolao {
+  id: string
+  jogo: Jogo
+  concurso: string
+  descricao?: string
+  cotasTotais: number
+  cotasVendidas: number
+  cotasDisponiveis: number
+  valorCota: number
+  dataSorteio: string
+  status: 'ABERTO' | 'ENCERRADO' | 'CANCELADO'
+}
+
+export interface BolaoRequest {
+  jogoId: string
+  concurso: string
+  descricao?: string
+  cotasTotais: number
+  valorCota: number
+  dataSorteio: string
+}
+
+export interface BolaoUpdateRequest {
+  jogoId?: string
+  concurso?: string
+  descricao?: string
+  cotasTotais?: number
+  valorCota?: number
+  dataSorteio?: string
+  status?: 'ABERTO' | 'ENCERRADO' | 'CANCELADO'
+}

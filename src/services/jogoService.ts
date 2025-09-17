@@ -1,5 +1,5 @@
 import api from './api'
-import { Jogo, PaginatedResponse } from '../types'
+import { Jogo, JogoRequest, JogoUpdateRequest, PaginatedResponse } from '../types'
 
 export const jogoService = {
   async getJogos(page = 0, size = 10): Promise<PaginatedResponse<Jogo>> {
@@ -29,6 +29,21 @@ export const jogoService = {
 
   async getAllJogosAtivos(): Promise<Jogo[]> {
     const response = await api.get('/jogos/ativos')
+    return response.data
+  },
+
+  async createJogo(jogo: JogoRequest): Promise<Jogo> {
+    const response = await api.post('/jogos', jogo)
+    return response.data
+  },
+
+  async updateJogo(id: string, jogo: JogoUpdateRequest): Promise<Jogo> {
+    const response = await api.put(`/jogos/${id}`, jogo)
+    return response.data
+  },
+
+  async toggleJogoStatus(id: string): Promise<Jogo> {
+    const response = await api.patch(`/jogos/${id}/toggle-status`)
     return response.data
   },
 }
