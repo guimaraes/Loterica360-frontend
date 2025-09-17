@@ -23,5 +23,34 @@ export const dashboardService = {
   getRecentActivity: async () => {
     const response = await api.get('/dashboard/recent-activity')
     return response.data
+  },
+
+  // Análise de desempenho por período
+  getPerformanceAnalysis: async (dataInicio: string, dataFim: string, tipoComparacao?: string) => {
+    const params = new URLSearchParams({
+      dataInicio,
+      dataFim,
+      ...(tipoComparacao && { tipoComparacao })
+    })
+    const response = await api.get(`/dashboard/performance-analysis?${params}`)
+    return response.data
+  },
+
+  // Comparação mês a mês
+  getMonthlyComparison: async () => {
+    const response = await api.get('/dashboard/monthly-comparison')
+    return response.data
+  },
+
+  // Comparação ano a ano
+  getYearlyComparison: async () => {
+    const response = await api.get('/dashboard/yearly-comparison')
+    return response.data
+  },
+
+  // Análise de tendências
+  getTrendAnalysis: async () => {
+    const response = await api.get('/dashboard/trend-analysis')
+    return response.data
   }
 }

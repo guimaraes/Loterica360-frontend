@@ -8,7 +8,8 @@ import {
   BarChart3, 
   Settings,
   Receipt,
-  UserCheck
+  UserCheck,
+  TrendingUp
 } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
@@ -16,6 +17,7 @@ import { cn } from '../../utils/cn'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Análise Avançada', href: '/analise', icon: TrendingUp },
   { name: 'Vendas', href: '/vendas', icon: ShoppingCart },
   { name: 'Jogos', href: '/jogos', icon: Gamepad2 },
   { name: 'Bolões', href: '/boloes', icon: Users },

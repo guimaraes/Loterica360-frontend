@@ -6,6 +6,7 @@ import { AuthRoute } from './components/layout/AuthRoute'
 // Pages
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { AnalysisPage } from './pages/AnalysisPage'
 import { VendasPage } from './pages/VendasPage'
 import { JogosPage } from './pages/JogosPage'
 import { BoloesPage } from './pages/BoloesPage'
@@ -27,6 +28,7 @@ function App() {
               <Layout>
                 <Routes>
                   <Route path="/" element={<DashboardPage />} />
+                  <Route path="/analise" element={<AnalysisPage />} />
                   <Route path="/vendas" element={<VendasPage />} />
                   <Route path="/jogos" element={<JogosPage />} />
                   <Route path="/boloes" element={<BoloesPage />} />
