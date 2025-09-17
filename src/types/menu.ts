@@ -20,16 +20,23 @@ export const menuSections: MenuSection[] = [
     title: 'Principal',
     items: [
       {
-        id: 'dashboard',
-        name: 'Dashboard',
-        href: '/',
-        icon: 'Home'
-      },
-      {
-        id: 'analise',
-        name: 'Análise Avançada',
-        href: '/analise',
-        icon: 'TrendingUp'
+        id: 'dashboard-geral',
+        name: 'Dashboard Geral',
+        icon: 'Home',
+        children: [
+          {
+            id: 'dashboard',
+            name: 'Dashboard Principal',
+            href: '/',
+            icon: 'Home'
+          },
+          {
+            id: 'analise',
+            name: 'Análise Avançada',
+            href: '/analise',
+            icon: 'TrendingUp'
+          }
+        ]
       }
     ]
   },
@@ -38,28 +45,35 @@ export const menuSections: MenuSection[] = [
     title: 'Cadastros',
     items: [
       {
-        id: 'usuarios',
-        name: 'Usuários',
-        href: '/usuarios',
-        icon: 'Settings'
-      },
-      {
-        id: 'clientes',
-        name: 'Clientes',
-        href: '/clientes',
-        icon: 'UserCheck'
-      },
-      {
-        id: 'jogos',
-        name: 'Jogos',
-        href: '/jogos',
-        icon: 'Gamepad2'
-      },
-      {
-        id: 'boloes',
-        name: 'Bolões',
-        href: '/boloes',
-        icon: 'Users'
+        id: 'cadastros-gerais',
+        name: 'Cadastros Gerais',
+        icon: 'Settings',
+        children: [
+          {
+            id: 'usuarios',
+            name: 'Usuários',
+            href: '/usuarios',
+            icon: 'Settings'
+          },
+          {
+            id: 'clientes',
+            name: 'Clientes',
+            href: '/clientes',
+            icon: 'UserCheck'
+          },
+          {
+            id: 'jogos',
+            name: 'Jogos',
+            href: '/jogos',
+            icon: 'Gamepad2'
+          },
+          {
+            id: 'boloes',
+            name: 'Bolões',
+            href: '/boloes',
+            icon: 'Users'
+          }
+        ]
       }
     ]
   },
@@ -68,22 +82,29 @@ export const menuSections: MenuSection[] = [
     title: 'Operacional',
     items: [
       {
-        id: 'vendas',
-        name: 'Vendas',
-        href: '/vendas',
-        icon: 'ShoppingCart'
-      },
-      {
-        id: 'turnos',
-        name: 'Turnos',
-        href: '/turnos',
-        icon: 'Clock'
-      },
-      {
-        id: 'movimentos',
-        name: 'Movimentos',
-        href: '/movimentos',
-        icon: 'Receipt'
+        id: 'operacional-geral',
+        name: 'Operacional Geral',
+        icon: 'ShoppingCart',
+        children: [
+          {
+            id: 'vendas',
+            name: 'Vendas',
+            href: '/vendas',
+            icon: 'ShoppingCart'
+          },
+          {
+            id: 'turnos',
+            name: 'Turnos',
+            href: '/turnos',
+            icon: 'Clock'
+          },
+          {
+            id: 'movimentos',
+            name: 'Movimentos',
+            href: '/movimentos',
+            icon: 'Receipt'
+          }
+        ]
       }
     ]
   },
@@ -107,6 +128,18 @@ export const menuSections: MenuSection[] = [
             name: 'Relatório Financeiro',
             href: '/relatorios/financeiro',
             icon: 'Receipt'
+          },
+          {
+            id: 'relatorios-usuarios',
+            name: 'Relatório de Usuários',
+            href: '/relatorios/usuarios',
+            icon: 'UserCheck'
+          },
+          {
+            id: 'relatorios-jogos',
+            name: 'Relatório de Jogos',
+            href: '/relatorios/jogos',
+            icon: 'Gamepad2'
           }
         ]
       }

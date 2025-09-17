@@ -3,6 +3,8 @@ import { RootState } from '../../store'
 import { menuSections } from '../../types/menu'
 import { MenuSection } from './MenuSection'
 import { cn } from '../../utils/cn'
+import { useMenuState } from '../../hooks/useMenuState'
+import { useEffect } from 'react'
 
 // Importar ícones do Lucide React
 import {
@@ -39,6 +41,14 @@ const getIcon = (iconName: string) => {
 
 export function Sidebar() {
   const sidebarOpen = useSelector((state: RootState) => state.ui.sidebarOpen)
+  const { collapseAll } = useMenuState()
+
+  // Colapsar todos os menus quando a sidebar for fechada
+  useEffect(() => {
+    if (!sidebarOpen) {
+      collapseAll()
+    }
+  }, [sidebarOpen, collapseAll])
 
   return (
     <aside
@@ -46,7 +56,9 @@ export function Sidebar() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-48'
       }`}
     >
-      <nav className="flex h-full flex-col space-y-6 p-4 overflow-y-auto">
+      <nav className={`flex h-full flex-col overflow-y-auto ${
+        sidebarOpen ? 'space-y-6 p-4' : 'space-y-3 p-2'
+      }`}>
         {menuSections.map((section) => (
           <MenuSection
             key={section.id}

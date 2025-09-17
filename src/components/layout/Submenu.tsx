@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { MenuItem } from '../../types/menu'
 import { useMenuIndicator } from './MenuIndicator'
+import { useMenuState } from '../../hooks/useMenuState'
 
 // Importar ícones do Lucide React
 import {
@@ -46,10 +47,20 @@ interface SubmenuProps {
 
 export function Submenu({ item, isOpen, sidebarOpen }: SubmenuProps) {
   const { isActive, hasActiveChild } = useMenuIndicator({ item })
-  const [isExpanded, setIsExpanded] = useState(hasActiveChild)
+  const { expandedMenus, toggleMenu, expandActiveMenu } = useMenuState()
+  const isExpanded = expandedMenus.has(item.id)
+
+  // Expandir automaticamente se há um filho ativo
+  useEffect(() => {
+    if (hasActiveChild && sidebarOpen) {
+      expandActiveMenu(item)
+    }
+  }, [hasActiveChild, sidebarOpen, expandActiveMenu, item])
 
   const handleToggle = () => {
-    setIsExpanded(!isExpanded)
+    if (sidebarOpen) {
+      toggleMenu(item.id)
+    }
   }
 
   if (!item.children || item.children.length === 0) {
@@ -109,7 +120,7 @@ export function Submenu({ item, isOpen, sidebarOpen }: SubmenuProps) {
       </button>
       
       {isExpanded && sidebarOpen && (
-        <div className="ml-4 mt-1 space-y-1">
+        <div className="ml-4 mt-1 space-y-1 overflow-hidden transition-all duration-200">
           {item.children.map((child) => (
             <NavLink
               key={child.id}
@@ -124,7 +135,7 @@ export function Submenu({ item, isOpen, sidebarOpen }: SubmenuProps) {
               }
             >
               <div className="h-3 w-3 rounded-full border border-muted-foreground/30" />
-              <span>{child.name}</span>
+              <span className="transition-opacity duration-200">{child.name}</span>
             </NavLink>
           ))}
         </div>

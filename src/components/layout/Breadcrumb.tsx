@@ -13,7 +13,7 @@ export function Breadcrumb() {
   
   // Mapear rotas para nomes amigáveis
   const routeNames: Record<string, string> = {
-    '/': 'Dashboard',
+    '/': 'Dashboard Principal',
     '/analise': 'Análise Avançada',
     '/usuarios': 'Usuários',
     '/clientes': 'Clientes',
@@ -24,7 +24,9 @@ export function Breadcrumb() {
     '/movimentos': 'Movimentos',
     '/relatorios': 'Relatórios',
     '/relatorios/vendas': 'Relatório de Vendas',
-    '/relatorios/financeiro': 'Relatório Financeiro'
+    '/relatorios/financeiro': 'Relatório Financeiro',
+    '/relatorios/usuarios': 'Relatório de Usuários',
+    '/relatorios/jogos': 'Relatório de Jogos'
   }
 
   // Gerar breadcrumb baseado na rota atual
