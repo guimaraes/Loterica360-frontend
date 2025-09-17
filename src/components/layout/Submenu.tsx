@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { MenuItem } from '../../types/menu'
@@ -46,6 +46,7 @@ interface SubmenuProps {
 }
 
 export function Submenu({ item, isOpen, sidebarOpen }: SubmenuProps) {
+  const location = useLocation()
   const { isActive, hasActiveChild } = useMenuIndicator({ item })
   const { expandedMenus, toggleMenu, expandActiveMenu } = useMenuState()
   const isExpanded = expandedMenus.has(item.id)
@@ -56,6 +57,14 @@ export function Submenu({ item, isOpen, sidebarOpen }: SubmenuProps) {
       expandActiveMenu(item)
     }
   }, [hasActiveChild, sidebarOpen, expandActiveMenu, item])
+
+  // Detectar mudança de rota e ajustar menus automaticamente
+  useEffect(() => {
+    if (hasActiveChild && sidebarOpen) {
+      // Se este menu tem um filho ativo, garantir que ele está aberto
+      expandActiveMenu(item)
+    }
+  }, [location.pathname, sidebarOpen, hasActiveChild, expandActiveMenu, item])
 
   const handleToggle = () => {
     if (sidebarOpen) {
