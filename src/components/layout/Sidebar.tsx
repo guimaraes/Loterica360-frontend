@@ -1,32 +1,41 @@
-import { NavLink } from 'react-router-dom'
-import { 
-  Home, 
-  ShoppingCart, 
-  Gamepad2,
-  Users, 
-  Clock, 
-  BarChart3, 
-  Settings,
-  Receipt,
-  UserCheck,
-  TrendingUp
-} from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
+import { menuSections } from '../../types/menu'
+import { MenuSection } from './MenuSection'
 import { cn } from '../../utils/cn'
 
-const navigation = [
-  { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'Análise Avançada', href: '/analise', icon: TrendingUp },
-  { name: 'Vendas', href: '/vendas', icon: ShoppingCart },
-  { name: 'Jogos', href: '/jogos', icon: Gamepad2 },
-  { name: 'Bolões', href: '/boloes', icon: Users },
-  { name: 'Turnos', href: '/turnos', icon: Clock },
-  { name: 'Movimentos', href: '/movimentos', icon: Receipt },
-  { name: 'Relatórios', href: '/relatorios', icon: BarChart3 },
-  { name: 'Usuários', href: '/usuarios', icon: Settings },
-  { name: 'Clientes', href: '/clientes', icon: UserCheck },
-]
+// Importar ícones do Lucide React
+import {
+  Home,
+  TrendingUp,
+  Settings,
+  UserCheck,
+  Gamepad2,
+  Users,
+  ShoppingCart,
+  Clock,
+  Receipt,
+  BarChart3
+} from 'lucide-react'
+
+// Mapear ícones por nome
+const iconMap: Record<string, any> = {
+  Home,
+  TrendingUp,
+  Settings,
+  UserCheck,
+  Gamepad2,
+  Users,
+  ShoppingCart,
+  Clock,
+  Receipt,
+  BarChart3
+}
+
+// Função para obter o ícone
+const getIcon = (iconName: string) => {
+  return iconMap[iconName] || Home
+}
 
 export function Sidebar() {
   const sidebarOpen = useSelector((state: RootState) => state.ui.sidebarOpen)
@@ -37,29 +46,14 @@ export function Sidebar() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-48'
       }`}
     >
-      <nav className="flex h-full flex-col space-y-1 p-4">
-        {navigation.map((item) => {
-          const Icon = item.icon
-          return (
-            <NavLink
-              key={item.name}
-              to={item.href}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center space-x-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                )
-              }
-            >
-              <Icon className="h-5 w-5" />
-              <span className={sidebarOpen ? 'opacity-100' : 'opacity-0'}>
-                {item.name}
-              </span>
-            </NavLink>
-          )
-        })}
+      <nav className="flex h-full flex-col space-y-6 p-4 overflow-y-auto">
+        {menuSections.map((section) => (
+          <MenuSection
+            key={section.id}
+            section={section}
+            sidebarOpen={sidebarOpen}
+          />
+        ))}
       </nav>
     </aside>
   )
