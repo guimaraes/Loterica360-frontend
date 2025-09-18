@@ -1,14 +1,16 @@
-import { Menu, Bell, User, LogOut } from 'lucide-react'
+import { Menu, Bell, User, LogOut, ShoppingCart } from 'lucide-react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../store'
 import { toggleSidebar } from '../../store/slices/uiSlice'
 import { logout } from '../../store/slices/authSlice'
 import { Button } from '../ui/Button'
 import { useAuth } from '../../hooks/useAuth'
+import { useIsVendedor } from '../../hooks/usePermissions'
 
 export function Header() {
   const dispatch = useDispatch<AppDispatch>()
   const { user } = useAuth()
+  const isVendedor = useIsVendedor()
 
   const handleLogout = () => {
     dispatch(logout())
@@ -26,6 +28,12 @@ export function Header() {
             <Menu className="h-5 w-5" />
           </Button>
           <h1 className="text-xl font-semibold">Loteria360</h1>
+          {isVendedor && (
+            <div className="flex items-center space-x-2 text-primary">
+              <ShoppingCart className="h-5 w-5" />
+              <span className="text-sm font-medium">Sistema de Vendas</span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center space-x-4">

@@ -32,15 +32,36 @@ api.interceptors.response.use(
   },
   (error) => {
     console.log('API Error:', error)
+    
+    const errorResponse = error.response?.data
+    
+    // Handle different error types based on the new error structure
     if (error.response?.status === 401) {
       // Token expired or invalid
       localStorage.removeItem('token')
       window.location.href = '/login'
     } else if (error.response?.status === 403) {
-      toast.error('Você não tem permissão para realizar esta ação')
+      const message = errorResponse?.detail || 'Você não tem permissão para realizar esta ação'
+      toast.error(message)
     } else if (error.response?.status >= 500) {
-      toast.error('Erro interno do servidor. Tente novamente mais tarde.')
+      const message = errorResponse?.detail || 'Erro interno do servidor. Tente novamente mais tarde.'
+      toast.error(message)
+    } else if (errorResponse?.detail) {
+      // Use the friendly error message from backend
+      toast.error(errorResponse.detail)
+      
+      // Handle validation errors with specific field messages
+      if (errorResponse.errors && errorResponse.errors.length > 0) {
+        errorResponse.errors.forEach((validationError: any) => {
+          if (validationError.field && validationError.message) {
+            toast.error(`${validationError.field}: ${validationError.message}`, {
+              duration: 4000,
+            })
+          }
+        })
+      }
     } else if (error.response?.data?.message) {
+      // Fallback to old message format
       toast.error(error.response.data.message)
     } else {
       toast.error('Ocorreu um erro inesperado')

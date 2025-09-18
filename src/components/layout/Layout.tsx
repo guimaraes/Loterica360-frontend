@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { Header } from './Header'
 import { Sidebar } from './Sidebar'
 import { Breadcrumb } from './Breadcrumb'
+import { VendedorRedirect } from './VendedorRedirect'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
 
@@ -24,7 +25,9 @@ export function Layout({ children }: LayoutProps) {
         >
           <div className="p-6">
             <Breadcrumb />
-            {children}
+            <VendedorRedirect>
+              {children}
+            </VendedorRedirect>
           </div>
         </main>
       </div>

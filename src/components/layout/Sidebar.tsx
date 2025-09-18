@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
-import { menuSections } from '../../types/menu'
 import { MenuSection } from './MenuSection'
 import { cn } from '../../utils/cn'
 import { useMenuState } from '../../hooks/useMenuState'
+import { useFilteredMenu } from '../../hooks/usePermissions'
 import { useEffect } from 'react'
 
 // Importar ícones do Lucide React
@@ -42,6 +42,7 @@ const getIcon = (iconName: string) => {
 export function Sidebar() {
   const sidebarOpen = useSelector((state: RootState) => state.ui.sidebarOpen)
   const { collapseAll } = useMenuState()
+  const filteredMenuSections = useFilteredMenu()
 
   // Colapsar todos os menus quando a sidebar for fechada
   useEffect(() => {
@@ -59,7 +60,7 @@ export function Sidebar() {
       <nav className={`flex h-full flex-col overflow-y-auto ${
         sidebarOpen ? 'space-y-6 p-4' : 'space-y-3 p-2'
       }`}>
-        {menuSections.map((section) => (
+        {filteredMenuSections.map((section) => (
           <MenuSection
             key={section.id}
             section={section}

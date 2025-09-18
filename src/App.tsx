@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './hooks/useAuth'
 import { Layout } from './components/layout/Layout'
 import { AuthRoute } from './components/layout/AuthRoute'
+import { AdminRoute, GerenteRoute, VendedorRoute, AuditorRoute } from './components/layout/PermissionRoute'
 
 // Pages
 import { LoginPage } from './pages/LoginPage'
@@ -27,16 +28,58 @@ function App() {
             <AuthRoute>
               <Layout>
                 <Routes>
-                  <Route path="/" element={<DashboardPage />} />
-                  <Route path="/analise" element={<AnalysisPage />} />
+                  {/* Rotas acessíveis por todos os perfis autenticados */}
                   <Route path="/vendas" element={<VendasPage />} />
-                  <Route path="/jogos" element={<JogosPage />} />
-                  <Route path="/boloes" element={<BoloesPage />} />
-                  <Route path="/turnos" element={<TurnosPage />} />
-                  <Route path="/movimentos" element={<MovimentosPage />} />
-                  <Route path="/relatorios" element={<RelatoriosPage />} />
-                  <Route path="/usuarios" element={<UsuariosPage />} />
                   <Route path="/clientes" element={<ClientesPage />} />
+                  
+                  {/* Rotas restritas por perfil */}
+                  <Route path="/" element={
+                    <AuditorRoute>
+                      <DashboardPage />
+                    </AuditorRoute>
+                  } />
+                  
+                  <Route path="/analise" element={
+                    <AuditorRoute>
+                      <AnalysisPage />
+                    </AuditorRoute>
+                  } />
+                  
+                  <Route path="/jogos" element={
+                    <GerenteRoute>
+                      <JogosPage />
+                    </GerenteRoute>
+                  } />
+                  
+                  <Route path="/boloes" element={
+                    <GerenteRoute>
+                      <BoloesPage />
+                    </GerenteRoute>
+                  } />
+                  
+                  <Route path="/turnos" element={
+                    <GerenteRoute>
+                      <TurnosPage />
+                    </GerenteRoute>
+                  } />
+                  
+                  <Route path="/movimentos" element={
+                    <GerenteRoute>
+                      <MovimentosPage />
+                    </GerenteRoute>
+                  } />
+                  
+                  <Route path="/relatorios" element={
+                    <AuditorRoute>
+                      <RelatoriosPage />
+                    </AuditorRoute>
+                  } />
+                  
+                  <Route path="/usuarios" element={
+                    <AdminRoute>
+                      <UsuariosPage />
+                    </AdminRoute>
+                  } />
                 </Routes>
               </Layout>
             </AuthRoute>
