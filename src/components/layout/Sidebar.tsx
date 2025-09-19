@@ -1,43 +1,15 @@
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
 import { MenuSection } from './MenuSection'
-import { cn } from '../../utils/cn'
 import { useMenuState } from '../../hooks/useMenuState'
 import { useFilteredMenu } from '../../hooks/usePermissions'
 import { useEffect } from 'react'
 
-// Importar ícones do Lucide React
-import {
-  Home,
-  TrendingUp,
-  Settings,
-  UserCheck,
-  Gamepad2,
-  Users,
-  ShoppingCart,
-  Clock,
-  Receipt,
-  BarChart3
-} from 'lucide-react'
+// Importações de ícones removidas - não utilizadas
 
-// Mapear ícones por nome
-const iconMap: Record<string, any> = {
-  Home,
-  TrendingUp,
-  Settings,
-  UserCheck,
-  Gamepad2,
-  Users,
-  ShoppingCart,
-  Clock,
-  Receipt,
-  BarChart3
-}
+// Mapear ícones por nome (removido - não utilizado)
 
-// Função para obter o ícone
-const getIcon = (iconName: string) => {
-  return iconMap[iconName] || Home
-}
+// Função para obter o ícone (removida - não utilizada)
 
 export function Sidebar() {
   const sidebarOpen = useSelector((state: RootState) => state.ui.sidebarOpen)

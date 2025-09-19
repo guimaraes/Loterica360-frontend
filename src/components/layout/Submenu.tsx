@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '../../utils/cn'
@@ -41,11 +41,10 @@ const getIcon = (iconName: string) => {
 
 interface SubmenuProps {
   item: MenuItem
-  isOpen: boolean
   sidebarOpen: boolean
 }
 
-export function Submenu({ item, isOpen, sidebarOpen }: SubmenuProps) {
+export function Submenu({ item, sidebarOpen }: SubmenuProps) {
   const location = useLocation()
   const { isActive, hasActiveChild } = useMenuIndicator({ item })
   const { expandedMenus, toggleMenu, expandActiveMenu } = useMenuState()

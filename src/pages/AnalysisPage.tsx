@@ -64,7 +64,11 @@ export function AnalysisPage() {
     tipoComparacao?: string
   }) => {
     setLoading(true)
-    setPerformanceFilters(filters)
+    setPerformanceFilters({
+      dataInicio: filters.dataInicio,
+      dataFim: filters.dataFim,
+      tipoComparacao: filters.tipoComparacao || 'diario'
+    })
     try {
       const data = await dashboardService.getPerformanceAnalysis(
         filters.dataInicio,
@@ -321,7 +325,7 @@ function PerformanceAnalysis({ data }: { data: any }) {
         <CardContent>
           <div className="space-y-3">
             {Object.entries(data.vendasPorJogo)
-              .sort(([, a], [, b]) => b - a)
+              .sort(([, a], [, b]) => (b as number) - (a as number))
               .map(([jogo, valor]) => (
                 <div key={jogo} className="flex items-center justify-between">
                   <span className="font-medium">{jogo}</span>
@@ -342,7 +346,7 @@ function PerformanceAnalysis({ data }: { data: any }) {
         <CardContent>
           <div className="space-y-3">
             {Object.entries(data.vendasPorCaixa)
-              .sort(([, a], [, b]) => b - a)
+              .sort(([, a], [, b]) => (b as number) - (a as number))
               .map(([caixa, valor]) => (
                 <div key={caixa} className="flex items-center justify-between">
                   <span className="font-medium">{caixa}</span>

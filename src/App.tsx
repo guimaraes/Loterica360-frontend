@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './hooks/useAuth'
 import { Layout } from './components/layout/Layout'
 import { AuthRoute } from './components/layout/AuthRoute'
-import { AdminRoute, GerenteRoute, VendedorRoute, AuditorRoute } from './components/layout/PermissionRoute'
+import { AdminRoute, GerenteRoute, AuditorRoute } from './components/layout/PermissionRoute'
 
 // Pages
 import { LoginPage } from './pages/LoginPage'

@@ -1,8 +1,6 @@
-import { MenuSection as MenuSectionType, MenuItem } from '../../types/menu'
+import { MenuSection as MenuSectionType } from '../../types/menu'
 import { Submenu } from './Submenu'
 import { CollapsedMenuIcon } from './CollapsedMenuIcon'
-import { cn } from '../../utils/cn'
-import { useMenuState } from '../../hooks/useMenuState'
 import { useMenuIndicator } from './MenuIndicator'
 
 interface MenuSectionProps {
@@ -11,7 +9,6 @@ interface MenuSectionProps {
 }
 
 export function MenuSection({ section, sidebarOpen }: MenuSectionProps) {
-  const { collapseAll } = useMenuState()
 
   // Se a sidebar estiver fechada, mostrar apenas ícones
   if (!sidebarOpen) {
@@ -45,7 +42,6 @@ export function MenuSection({ section, sidebarOpen }: MenuSectionProps) {
           <Submenu
             key={item.id}
             item={item}
-            isOpen={sidebarOpen}
             sidebarOpen={sidebarOpen}
           />
         ))}

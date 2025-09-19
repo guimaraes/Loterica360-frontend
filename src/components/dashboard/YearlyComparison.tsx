@@ -117,7 +117,7 @@ export function YearlyComparison({ data }: YearlyComparisonProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {data.anos.map((ano, anoIndex) => (
+            {data.anos.map((ano) => (
               <div key={ano.ano}>
                 <h4 className="text-sm font-medium mb-2 text-gray-700">
                   {ano.ano} - {formatCurrency(ano.totalValor)} ({ano.totalVendas} vendas)
